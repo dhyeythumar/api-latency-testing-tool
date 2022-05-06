@@ -1,0 +1,35 @@
+{
+    "name": "api-latency-testing",
+    "version": "1.0.0",
+    "description": "Simple server for testing API endpoint latency from multiple regional.",
+    "author": "Dhyey Thumar",
+    "email": "dhyeythumar@gmail.com",
+    "license": "MIT",
+    "main": "./api/latency.js",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "start": "node ${npm_package_config_serverless}",
+        "dev": "nodemon ${npm_package_config_serverless}",
+        "debug": "node --inspect ${npm_package_config_serverless}",
+        "test": "echo \"Error: no tests installed\" && exit 1"
+    },
+    "dependencies": {
+        "axios": "^0.27.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.15",
+        "serverless": "^3.15.2",
+        "serverless-apigw-binary": "^0.4.4",
+        "serverless-content-encoding": "^1.1.0",
+        "serverless-offline": "^8.7.0",
+        "serverless-plugin-resource-tagging": "^1.2.0"
+    },
+    "config": {
+        "serverless": "node_modules/serverless/bin/serverless offline --stage npr"
+    },
+    "keywords": [
+        "API latency testing",
+        "Multi regional testing"
+    ]
+}

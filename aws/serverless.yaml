@@ -1,0 +1,39 @@
+service: api-latency-testing
+
+plugins:
+  - serverless-offline
+  - serverless-apigw-binary
+  - serverless-content-encoding
+  - serverless-plugin-resource-tagging
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: eu-west-1
+  memorySize: 512 # optional, in MB, default is 1024
+  timeout: 30 # The default is 6 seconds. API Gateway current maximum is 30 seconds
+  endpointType: REGIONAL
+  deploymentBucket:
+    name: np-serverless-deploy-bucket-${opt:stage}
+  stackTags:
+    project: ${self:service}
+    Environment: ${opt:stage}
+    team: "WebsiteSquad"
+
+functions:
+  latency-testing:
+    handler: api/index.handler
+    reservedConcurrency: 4
+    events:
+      - http:
+          path: /latency
+          method: get
+          cors: true
+          private: false
+
+custom:
+  contentEncoding:
+    minimumCompressionSize: 100 # Minimum body size required for compression in bytes
+  apigwBinary:
+    types:           #list of mime-types   
+    - '*/*'
