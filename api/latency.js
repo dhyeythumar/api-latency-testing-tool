@@ -1,0 +1,69 @@
+import { getMiddleware } from "../src/middlewares.js";
+import { isValidReqBody } from "../src/utils.js";
+import axios from "../src/axios_setup.js";
+
+const handler = async (req, res) => {
+    const prevUptime = process.uptime();
+    try {
+        isValidReqBody(req);
+
+        let numOfTests = 5; // TODO :: should user provide this??
+        const promiseArray = [];
+        let p;
+        while (numOfTests--) {
+            p = axios({
+                method: `${req.body.method.toUpperCase()}`,
+                url: `${req.body.url}`,
+                headers: {
+                    "x-api-key": `${req.body.xApiKey}` || "",
+                },
+            });
+            promiseArray.push(p);
+        }
+
+        const latencyArray = [];
+        let avgLatency = 0;
+        const resolvedPromises = await Promise.allSettled(promiseArray);
+        resolvedPromises.forEach((res) => {
+            res = res.value;
+            if (res && res.status === 200 && res.data) {
+                latencyArray.push(`${res.responseTime} ms`);
+                avgLatency += res.responseTime;
+            } else {
+                console.log("Failed request");
+                console.log(res);
+            }
+        });
+        avgLatency /= latencyArray.length;
+
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.setHeader(
+            "server-timing",
+            `${(process.uptime() - prevUptime).toFixed(4)} sec`
+        );
+        // res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        res.status(200).json({
+            "latency-array": latencyArray,
+            "average-latency": `${avgLatency} ms`,
+            "total-successful-tests": latencyArray.length,
+            "total-failed-tests": promiseArray.length - latencyArray.length,
+        });
+    } catch (err) {
+        console.error(err);
+        const statusCode = err.statusCode || 400;
+
+        res.status(statusCode).json({
+            error: err.name,
+            message: err.message,
+            // stack: err.stack,
+        });
+    }
+};
+
+export default getMiddleware(handler);
+
+/*  * :: Note ::
+    ! Axios doesn't provide timings info so we have used interceptors to record timing info but dont know how much accurate it would be.
+    * But request lib is providing a extensive timing related details, check this - 
+    * https://github.com/axios/axios/issues/695#issuecomment-375590932
+*/
