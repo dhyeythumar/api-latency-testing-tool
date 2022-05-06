@@ -8,12 +8,12 @@
     "redirects": [
         {
             "source": "/",
-            "destination": "https://github.com/dhyeythumar/api-latency-testing",
+            "destination": "https://github.com/dhyeythumar/api-latency-testing-tool",
             "permanent": false
         },
         {
             "source": "/src(.*)",
-            "destination": "https://github.com/dhyeythumar/api-latency-testing",
+            "destination": "https://github.com/dhyeythumar/api-latency-testing-tool",
             "permanent": false
         }
     ],
