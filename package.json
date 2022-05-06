@@ -1,0 +1,25 @@
+{
+    "name": "api-latency-testing-tool",
+    "version": "1.0.0",
+    "description": "Simple tool for testing API endpoint latency from multiple locations.",
+    "author": "Dhyey Thumar",
+    "email": "dhyeythumar@gmail.com",
+    "license": "MIT",
+    "main": "./api/latency.js",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "start": "vercel dev",
+        "test": "echo \"Error: no tests installed\" && exit 1"
+    },
+    "dependencies": {
+        "axios": "^0.27.2"
+    },
+    "devDependencies": {
+        "vercel": "^24.2.0"
+    },
+    "keywords": [
+        "API latency testing tool",
+        "Multi regional testing"
+    ]
+}

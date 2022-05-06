@@ -1,0 +1,47 @@
+{
+    "functions": {
+        "api/*.js": {
+            "maxDuration": 10,
+            "memory": 512
+        }
+    },
+    "redirects": [
+        {
+            "source": "/",
+            "destination": "https://github.com/dhyeythumar/api-latency-testing",
+            "permanent": false
+        },
+        {
+            "source": "/src(.*)",
+            "destination": "https://github.com/dhyeythumar/api-latency-testing",
+            "permanent": false
+        }
+    ],
+    "headers": [
+        {
+            "source": "/api(.*)",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                },
+                {
+                    "key": "Access-Control-Max-Age",
+                    "value": "86400"
+                },
+                {
+                    "key": "Access-Control-Allow-Credentials",
+                    "value": "true"
+                },
+                {
+                    "key": "Access-Control-Allow-Methods",
+                    "value": "GET, OPTIONS"
+                },
+                {
+                    "key": "Access-Control-Allow-Headers",
+                    "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+                }
+            ]
+        }
+    ]
+}
