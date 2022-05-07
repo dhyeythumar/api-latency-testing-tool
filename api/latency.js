@@ -2,18 +2,21 @@ import { getMiddleware } from "../src/middlewares.js";
 import { isValidReqBody } from "../src/utils.js";
 import axios from "../src/axios_setup.js";
 
+// TODO
+// Get general network info (internet speed, bandwidth)
+
 const handler = async (req, res) => {
     const prevUptime = process.uptime();
     try {
         isValidReqBody(req);
 
-        let numOfTests = 5; // TODO :: should user provide this??
+        let numOfTests = 5;
         const promiseArray = [];
         let p;
         while (numOfTests--) {
             p = axios({
-                method: `${req.body.method.toUpperCase()}`,
                 url: `${req.body.url}`,
+                method: `${req.body.method.toUpperCase()}`,
                 headers: {
                     "x-api-key": `${req.body.xApiKey}` || "",
                 },
@@ -26,6 +29,8 @@ const handler = async (req, res) => {
         const resolvedPromises = await Promise.allSettled(promiseArray);
         resolvedPromises.forEach((res) => {
             res = res.value;
+            //* Origin server's IP address
+            //* console.log(res.request.socket.remoteAddress);
             if (res && res.status === 200 && res.data) {
                 latencyArray.push(`${res.responseTime} ms`);
                 avgLatency += res.responseTime;
