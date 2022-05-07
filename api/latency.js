@@ -1,5 +1,5 @@
 import { getMiddleware } from "../src/middlewares.js";
-import { isValidReqBody } from "../src/utils.js";
+import { isValidReqBody, getServerInfo } from "../src/utils.js";
 import axios from "../src/axios_setup.js";
 
 // TODO
@@ -41,17 +41,20 @@ const handler = async (req, res) => {
         });
         avgLatency /= latencyArray.length;
 
-        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        // const hostIPs = await dnsLookup(`${req.headers.host}`);
+        const serverInfo = await getServerInfo();
+
         res.setHeader(
             "server-timing",
             `${(process.uptime() - prevUptime).toFixed(4)} sec`
         );
         // res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
         res.status(200).json({
-            "latency-array": latencyArray,
             "average-latency": `${avgLatency} ms`,
+            "latency-array": latencyArray,
             "total-successful-tests": latencyArray.length,
             "total-failed-tests": promiseArray.length - latencyArray.length,
+            "server-info": serverInfo,
         });
     } catch (err) {
         console.error(err);
