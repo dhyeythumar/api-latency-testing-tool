@@ -7,17 +7,24 @@ const optionsMiddleware = (req, res) => {
 
 const getMiddleware = (fn) => {
     return (req, res) => {
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.setHeader("Allow", "GET");
+
         if (req.method === "OPTIONS") return optionsMiddleware(req, res);
         // return if not GET method
         else if (req.method !== "GET") {
-            res.setHeader("Content-Type", "application/json; charset=utf-8");
-            res.setHeader("Allow", "GET");
             return res.status(405).json({
-                error: "Method other then GET is not allowed",
+                error: "Method Not Allowed",
+                message: "Method other then GET, OPTIONS is not allowed",
             });
+        } else {
+            if (req.headers["x-api-key"] !== process.env.xApiKey)
+                return res.status(401).json({
+                    error: "Unauthorized",
+                    message: "You are not authorized to use this service",
+                });
+            return fn(req, res);
         }
-
-        return fn(req, res);
     };
 };
 
