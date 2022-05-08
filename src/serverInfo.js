@@ -1,3 +1,4 @@
+import axios from "./axios_setup.js";
 
 export class NetworkInfo {
     static imageUrl =
@@ -63,5 +64,123 @@ export class NetworkInfo {
         } catch (err) {
             throw new Error(`Error in calUploadSpeed function :: ${err}`);
         }
+    }
+}
+
+/*
+ * Leveraging In-Memory cache to save server's info given by 3rd party service so I am not exausting my free tier limit.
+ * This cache remains until server dies out.
+ * Also note - caching won't work for local testing but for prod deployment it works !!
+ */
+class Cache {
+    cache;
+    constructor() {
+        this.cache = {};
+    }
+
+    get(key) {
+        return this.cache[key];
+    }
+
+    set(key, data) {
+        this.cache[key] = data;
+    }
+}
+
+export default class ServerInfo {
+    ipCache;
+    constructor() {
+        this.ipCache = new Cache();
+    }
+
+    async _fetchServerIP() {
+        const res = await axios({
+            url: `${process.env.HOST}/whatismyipaddress`,
+            method: "GET",
+            headers: {
+                "x-api-key": `${process.env.X_API_KEY}`,
+            },
+        });
+        if (res && res.status === 200 && res.data) return res.data.ip;
+        return null;
+    }
+
+    async _fetchServerInfo(ip) {
+        // send request to find server's information
+        const serverInfo = await axios({
+            url: `https://ipinfo.io/json?token=${process.env.TOKEN}`,
+            method: "GET",
+        });
+        if (serverInfo && serverInfo.status === 200 && serverInfo.data)
+            return serverInfo.data;
+        else {
+            const res = {
+                ip: ip,
+                moreInfo: `https://whatismyipaddress.com/ip/${ip}`,
+            };
+            if (serverInfo.status === 429)
+                res["error"] = {
+                    name: "Too many requests",
+                    message:
+                        "You have hit the rate limit of 3rd party service. So click on the above link in moreInfo field to now more about the server.",
+                };
+            else
+                res["error"] = {
+                    message:
+                        "Didn't find any server information using 3rd party service.",
+                };
+            return res;
+        }
+    }
+
+    async _serverInfo() {
+        try {
+            let serverIP = await this._fetchServerIP();
+            if (!serverIP)
+                return {
+                    message: "Can't find server's IP address",
+                };
+
+            const cachedServerInfo = this.ipCache.get(serverIP);
+            if (cachedServerInfo) {
+                // cachedServerInfo["cached"] = "true";
+                return cachedServerInfo;
+            }
+
+            const serverInfo = await this._fetchServerInfo(serverIP);
+            if (serverIP !== serverInfo.ip) {
+                serverInfo["conflicting-ip"] = serverIP;
+                serverIP = serverInfo.ip;
+            }
+            // cache the server info
+            this.ipCache.set(serverIP, serverInfo);
+            return serverInfo;
+        } catch (err) {
+            throw new Error(`Error in _serverInfo function :: ${err}`);
+        }
+    }
+
+    run() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const promiseArray = [];
+                promiseArray.push(this._serverInfo());
+                promiseArray.push(NetworkInfo.calDownloadSpeed());
+                promiseArray.push(NetworkInfo.calUploadSpeed());
+
+                let serverDetails = {};
+                const resolvedPromises = await Promise.allSettled(promiseArray);
+                resolvedPromises.forEach((res) => {
+                    if (res.status === "fulfilled") {
+                        serverDetails = { ...serverDetails, ...res.value };
+                    } else {
+                        console.log(res); // promise rejected
+                    }
+                });
+                resolve(serverDetails);
+            } catch (err) {
+                reject(err);
+            }
+        });
     }
 }

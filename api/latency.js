@@ -1,9 +1,9 @@
 import { getMiddleware } from "../src/middlewares.js";
-import { isValidReqBody, getServerInfo } from "../src/utils.js";
+import { isValidReqBody } from "../src/utils.js";
 import axios from "../src/axios_setup.js";
+import ServerInfo from "../src/serverInfo.js";
 
-// TODO
-// Get general network info (internet speed, bandwidth)
+const serverInfo_obj = new ServerInfo();
 
 const handler = async (req, res) => {
     const prevUptime = process.uptime();
@@ -43,7 +43,7 @@ const handler = async (req, res) => {
         avgLatency /= latencyArray.length;
 
         // const hostIPs = await dnsLookup(`${req.headers.host}`);
-        const serverInfo = await getServerInfo();
+        const serverInfo = await serverInfo_obj.run();
 
         res.setHeader(
             "server-timing",
