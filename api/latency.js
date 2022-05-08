@@ -28,15 +28,16 @@ const handler = async (req, res) => {
         let avgLatency = 0;
         const resolvedPromises = await Promise.allSettled(promiseArray);
         resolvedPromises.forEach((res) => {
-            res = res.value;
-            //* Origin server's IP address
-            //* console.log(res.request.socket.remoteAddress);
-            if (res && res.status === 200 && res.data) {
-                latencyArray.push(`${res.responseTime} ms`);
-                avgLatency += res.responseTime;
+            if (res.status === "fulfilled") {
+                res = res.value;
+                //* Origin server's IP address
+                //* console.log(res.request.socket.remoteAddress);
+                if (res && res.status === 200 && res.data) {
+                    latencyArray.push(`${res.responseTime} ms`);
+                    avgLatency += res.responseTime;
+                }
             } else {
-                console.log("Failed request");
-                console.log(res);
+                console.log(`Axios request failed! Reason :: ${res.reason}`);
             }
         });
         avgLatency /= latencyArray.length;
