@@ -1,8 +1,12 @@
 {
     "functions": {
-        "api/*.js": {
+        "api/latency.js": {
             "maxDuration": 10,
             "memory": 512
+        },
+        "api/*.js": {
+            "maxDuration": 4,
+            "memory": 128
         }
     },
     "redirects": [
