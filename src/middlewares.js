@@ -18,7 +18,7 @@ const getMiddleware = (fn) => {
                 message: "Method other then GET, OPTIONS is not allowed",
             });
         } else {
-            if (req.headers["x-api-key"] !== process.env.xApiKey)
+            if (req.headers["x-api-key"] !== process.env.X_API_KEY)
                 return res.status(401).json({
                     error: "Unauthorized",
                     message: "You are not authorized to use this service",
@@ -28,4 +28,27 @@ const getMiddleware = (fn) => {
     };
 };
 
-export { getMiddleware };
+const postMiddleware = (fn) => {
+    return (req, res) => {
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.setHeader("Allow", "POST");
+
+        if (req.method === "OPTIONS") return optionsMiddleware(req, res);
+        // return if not POST method
+        else if (req.method !== "POST") {
+            return res.status(405).json({
+                error: "Method Not Allowed",
+                message: "Method other then POST, OPTIONS is not allowed",
+            });
+        } else {
+            if (req.headers["x-api-key"] !== process.env.X_API_KEY)
+                return res.status(401).json({
+                    error: "Unauthorized",
+                    message: "You are not authorized to use this service",
+                });
+            return fn(req, res);
+        }
+    };
+};
+
+export { getMiddleware, postMiddleware };
