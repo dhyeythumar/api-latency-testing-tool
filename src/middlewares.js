@@ -15,7 +15,7 @@ const getMiddleware = (fn) => {
         else if (req.method !== "GET") {
             return res.status(405).json({
                 error: "Method Not Allowed",
-                message: "Method other then GET, OPTIONS is not allowed",
+                message: "Method other then GET, OPTIONS are not allowed",
             });
         } else {
             if (req.headers["x-api-key"] !== process.env.X_API_KEY)
@@ -38,7 +38,7 @@ const postMiddleware = (fn) => {
         else if (req.method !== "POST") {
             return res.status(405).json({
                 error: "Method Not Allowed",
-                message: "Method other then POST, OPTIONS is not allowed",
+                message: "Method other then POST, OPTIONS are not allowed",
             });
         } else {
             if (req.headers["x-api-key"] !== process.env.X_API_KEY)

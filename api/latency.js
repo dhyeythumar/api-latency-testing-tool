@@ -1,4 +1,4 @@
-import { getMiddleware } from "../src/middlewares.js";
+import { postMiddleware } from "../src/middlewares.js";
 import { isValidReqBody } from "../src/utils.js";
 import axios from "../src/axios_setup.js";
 import ServerInfo from "../src/serverInfo.js";
@@ -69,7 +69,7 @@ const handler = async (req, res) => {
     }
 };
 
-export default getMiddleware(handler);
+export default postMiddleware(handler);
 
 /*  * :: Note ::
     ! Axios doesn't provide timings info so we have used interceptors to record timing info but dont know how much accurate it would be.
