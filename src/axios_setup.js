@@ -1,11 +1,6 @@
 import axios from "axios";
-import https from "https";
 
 ((axios) => {
-    const httpsAgent = new https.Agent({
-        keepAlive: true,
-    });
-    axios.defaults.httpsAgent = httpsAgent;
     axios.defaults.timeout = 8000;
     axios.defaults.maxRedirects = 0;
 

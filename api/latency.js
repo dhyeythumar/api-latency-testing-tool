@@ -1,6 +1,7 @@
 import { postMiddleware } from "../src/middlewares.js";
 import { isValidReqBody } from "../src/utils.js";
 import axios from "../src/axios_setup.js";
+import https from "https";
 import ServerInfo from "../src/serverInfo.js";
 
 const serverInfo_obj = new ServerInfo();
@@ -9,6 +10,15 @@ const handler = async (req, res) => {
     const prevUptime = process.uptime();
     try {
         isValidReqBody(req);
+
+        // by default keepAlive will be used unless specified
+        if (req.body.keepAlive === undefined || req.body.keepAlive === true) {
+            console.log("using keep alive");
+            const httpsAgent = new https.Agent({
+                keepAlive: true,
+            });
+            axios.defaults.httpsAgent = httpsAgent;
+        }
 
         let numOfTests = 5;
         const promiseArray = [];
