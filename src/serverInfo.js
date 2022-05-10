@@ -164,7 +164,9 @@ export default class ServerInfo {
         return new Promise(async (resolve, reject) => {
             try {
                 const promiseArray = [];
-                promiseArray.push(this._serverInfo());
+                if (process.env.NODE_ENV === "production")
+                    promiseArray.push(this._serverInfo());
+
                 promiseArray.push(NetworkInfo.calDownloadSpeed());
                 promiseArray.push(NetworkInfo.calUploadSpeed());
 

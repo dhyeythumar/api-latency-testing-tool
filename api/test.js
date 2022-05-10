@@ -23,6 +23,7 @@ const handler = async (_, res) => {
         otherIPService: otherIPService.data.trim(),
         ...download,
         ...upload,
+        vercel_region: process.env.VERCEL_REGION,
     });
 };
 
