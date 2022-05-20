@@ -1,16 +1,26 @@
 import dns from "dns";
 
+class httpErrorRes extends Error {
+    error;
+    statusCode;
+    //* By default error code is 400 (bad request)
+    constructor(error, message, statusCode = 400) {
+        super(message);
+        this.error = error;
+        this.statusCode = statusCode;
+    }
+}
+
 const isValidReqBody = (req) => {
     if (!req.body) {
-        const e = new Error("Request body is empty!");
-        e.name = "Bad request format";
-        throw e;
+        throw new httpErrorRes("Bad request format", "Request body is empty!");
     }
 
     if (!req.body.url || !req.body.method) {
-        const e = new Error("Missing url/method in request body!");
-        e.name = "Bad request format";
-        throw e;
+        throw new httpErrorRes(
+            "Bad request format",
+            "Missing url/method in request body!"
+        );
     }
 };
 
@@ -32,11 +42,12 @@ const dnsLookup = (hostname) => {
     return new Promise((resolve, reject) => {
         dns.resolve4(hostname, (err, addresses) => {
             if (err) {
-                const e = new Error(
-                    `Error while finding testing server's IP address :: ${err}`
+                reject(
+                    new httpErrorRes(
+                        "DNS query resolution error",
+                        `Error while finding testing server's IP address :: ${err}`
+                    )
                 );
-                e.name = "DNS query resolution error";
-                reject(e);
             } else {
                 const serverIPs = [];
                 addresses.forEach((ip) =>
@@ -48,4 +59,4 @@ const dnsLookup = (hostname) => {
     });
 };
 
-export { isValidReqBody, dnsLookup };
+export { httpErrorRes, isValidReqBody, dnsLookup };
