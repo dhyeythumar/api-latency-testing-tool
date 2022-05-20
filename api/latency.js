@@ -1,4 +1,4 @@
-import { postMiddleware } from "../src/middlewares.js";
+import { httpMiddleware } from "../src/middlewares.js";
 import { isValidReqBody } from "../src/utils.js";
 import axios from "../src/axios_setup.js";
 import https from "https";
@@ -81,10 +81,10 @@ const handler = async (req, res) => {
     }
 };
 
-export default postMiddleware(handler);
+export default httpMiddleware(handler, "POST");
 
-/*  * :: Note ::
-    ! Axios doesn't provide timings info so we have used interceptors to record timing info but dont know how much accurate it would be.
-    * But request lib is providing a extensive timing related details, check this - 
-    * https://github.com/axios/axios/issues/695#issuecomment-375590932
-*/
+/*
+ * :: Note ::
+ ! Axios doesn't provide timings info so we have used interceptors to record timing info but dont know how much accurate it would be.
+ * But request lib is providing a extensive timing related details, check this - https://github.com/axios/axios/issues/695#issuecomment-375590932
+ */

@@ -1,4 +1,4 @@
-import { getMiddleware } from "../src/middlewares.js";
+import { httpMiddleware } from "../src/middlewares.js";
 import { NetworkInfo } from "../src/serverInfo.js";
 import axios from "axios";
 
@@ -27,4 +27,4 @@ const handler = async (_, res) => {
     });
 };
 
-export default getMiddleware(handler);
+export default httpMiddleware(handler, "GET");

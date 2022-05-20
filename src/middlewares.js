@@ -5,50 +5,34 @@ const optionsMiddleware = (req, res) => {
     return res.status(200).end();
 };
 
-const getMiddleware = (fn) => {
+/*
+ * 1. Requests from external world are only allowed from RapidAPI Gateway.
+ * 2. Requests from internal traffic would be adding 'x-rapidapi-proxy-secret' in headers to bypass security
+ */
+const httpMiddleware = (fn, method) => {
     return (req, res) => {
         res.setHeader("Content-Type", "application/json; charset=utf-8");
-        res.setHeader("Allow", "GET");
+        res.setHeader("Allow", `${method}`);
 
         if (req.method === "OPTIONS") return optionsMiddleware(req, res);
-        // return if not GET method
-        else if (req.method !== "GET") {
+        else if (req.method !== method) {
             return res.status(405).json({
                 error: "Method Not Allowed",
-                message: "Method other then GET, OPTIONS are not allowed",
+                message: `Method other then ${method}, OPTIONS are not allowed`,
             });
         } else {
-            if (req.headers["x-api-key"] !== process.env.X_API_KEY)
-                return res.status(401).json({
-                    error: "Unauthorized",
-                    message: "You are not authorized to use this service",
+            if (
+                req.headers["x-rapidapi-proxy-secret"] !==
+                process.env.X_RAPIDAPI_PROXY_SECRET
+            )
+                res.status(401).json({
+                    error: "Can't access the endpoint directly!",
+                    message:
+                        "Only requests from RapidAPI gateway are accepted (https://rapidapi.com/dhyeythumar/api/apis-latency-testing).",
                 });
             return fn(req, res);
         }
     };
 };
 
-const postMiddleware = (fn) => {
-    return (req, res) => {
-        res.setHeader("Content-Type", "application/json; charset=utf-8");
-        res.setHeader("Allow", "POST");
-
-        if (req.method === "OPTIONS") return optionsMiddleware(req, res);
-        // return if not POST method
-        else if (req.method !== "POST") {
-            return res.status(405).json({
-                error: "Method Not Allowed",
-                message: "Method other then POST, OPTIONS are not allowed",
-            });
-        } else {
-            if (req.headers["x-api-key"] !== process.env.X_API_KEY)
-                return res.status(401).json({
-                    error: "Unauthorized",
-                    message: "You are not authorized to use this service",
-                });
-            return fn(req, res);
-        }
-    };
-};
-
-export { getMiddleware, postMiddleware };
+export { httpMiddleware };

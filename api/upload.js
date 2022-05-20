@@ -1,10 +1,11 @@
-import { postMiddleware } from "../src/middlewares.js";
+import { httpMiddleware } from "../src/middlewares.js";
 
-// dummy endpoint for calculating server's upload speed
+//! internal POST endpoint for calculating server's upload speed
+//* usage: /upload
 const handler = async (_, res) => {
     res.status(200).json({
         message: "success",
     });
 };
 
-export default postMiddleware(handler);
+export default httpMiddleware(handler, "POST");
