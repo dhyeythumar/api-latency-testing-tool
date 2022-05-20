@@ -20,18 +20,18 @@ const httpMiddleware = (fn, method) => {
                 error: "Method Not Allowed",
                 message: `Method other then ${method}, OPTIONS are not allowed`,
             });
-        } else {
-            if (
-                req.headers["x-rapidapi-proxy-secret"] !==
-                process.env.X_RAPIDAPI_PROXY_SECRET
-            )
-                res.status(401).json({
-                    error: "Can't access the endpoint directly!",
-                    message:
-                        "Only requests from RapidAPI gateway are accepted (https://rapidapi.com/dhyeythumar/api/apis-latency-testing).",
-                });
-            return fn(req, res);
         }
+
+        if (
+            req.headers["x-rapidapi-proxy-secret"] !==
+            process.env.X_RAPIDAPI_PROXY_SECRET
+        )
+            return res.status(401).json({
+                error: "Can't access the endpoint directly!",
+                message:
+                    "Only requests from RapidAPI gateway are accepted (https://rapidapi.com/dhyeythumar/api/apis-latency-testing).",
+            });
+        return fn(req, res);
     };
 };
 

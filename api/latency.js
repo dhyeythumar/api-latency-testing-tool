@@ -30,7 +30,7 @@ const handler = async (req, res) => {
                 method: `${req.body.method.toUpperCase()}`,
                 headers: {
                     "x-api-key": `${req.body.xApiKey}` || "",
-                    Connection: connection,
+                    connection,
                 },
             });
             promiseArray.push(p);

@@ -2,12 +2,14 @@ import { httpMiddleware } from "../src/middlewares.js";
 import { NetworkInfo } from "../src/serverInfo.js";
 import axios from "axios";
 
-const handler = async (_, res) => {
+//! internal GET endpoint for testing
+//* usage: /test
+const handler = async (req, res) => {
     const myIPService = await axios({
         url: `${process.env.HOST}/whatismyipaddress`,
         method: "GET",
         headers: {
-            "x-api-key": `${process.env.X_API_KEY}`,
+            "x-rapidapi-proxy-secret": `${process.env.X_RAPIDAPI_PROXY_SECRET}`,
         },
     });
     const otherIPService = await axios({
@@ -19,6 +21,7 @@ const handler = async (_, res) => {
     const upload = await NetworkInfo.calUploadSpeed();
 
     res.status(200).json({
+        reqHeaders: req.headers,
         myIPService: myIPService.data.ip,
         otherIPService: otherIPService.data.trim(),
         ...download,
