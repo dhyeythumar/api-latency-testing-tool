@@ -48,7 +48,7 @@ export class NetworkInfo {
                 url: `${process.env.HOST}/upload`,
                 method: "POST",
                 headers: {
-                    "x-api-key": `${process.env.X_API_KEY}`,
+                    "x-api-key": `${process.env.INTERNAL_X_API_KEY}`,
                 },
                 data: data,
             });
@@ -98,7 +98,7 @@ export default class ServerInfo {
             url: `${process.env.HOST}/whatismyipaddress`,
             method: "GET",
             headers: {
-                "x-api-key": `${process.env.X_API_KEY}`,
+                "x-api-key": `${process.env.INTERNAL_X_API_KEY}`,
             },
         });
         if (res && res.status === 200 && res.data) return res.data.ip;
@@ -108,7 +108,7 @@ export default class ServerInfo {
     async _fetchServerInfo(ip) {
         // send request to find server's information
         const serverInfo = await axios({
-            url: `https://ipinfo.io/json?token=${process.env.TOKEN}`,
+            url: `https://ipinfo.io/json?token=${process.env.IP_INFO_TOKEN}`,
             method: "GET",
         });
         if (serverInfo && serverInfo.status === 200 && serverInfo.data)
