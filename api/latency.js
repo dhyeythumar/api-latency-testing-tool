@@ -11,9 +11,10 @@ const handler = async (req, res) => {
     try {
         isValidReqBody(req);
 
+        let connection = "close";
         // by default keepAlive will be used unless specified
         if (req.body.keepAlive === undefined || req.body.keepAlive === true) {
-            console.log("using keep alive");
+            connection = "keep-alive";
             const httpsAgent = new https.Agent({
                 keepAlive: true,
             });
@@ -29,6 +30,7 @@ const handler = async (req, res) => {
                 method: `${req.body.method.toUpperCase()}`,
                 headers: {
                     "x-api-key": `${req.body.xApiKey}` || "",
+                    Connection: connection,
                 },
             });
             promiseArray.push(p);
