@@ -21,6 +21,8 @@
     },
     "keywords": [
         "API latency testing tool",
-        "Multi regional testing"
+        "Multi regional testing",
+        "API rate limiting",
+        "LRU cache"
     ]
 }
