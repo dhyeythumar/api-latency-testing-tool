@@ -1,6 +1,6 @@
 import dns from "dns";
 
-class httpErrorRes extends Error {
+export default class httpErrorRes extends Error {
     error;
     statusCode;
     //* By default error code is 400 (bad request)
@@ -59,4 +59,4 @@ const dnsLookup = (hostname) => {
     });
 };
 
-export { httpErrorRes, isValidReqBody, dnsLookup };
+export { isValidReqBody, dnsLookup };
