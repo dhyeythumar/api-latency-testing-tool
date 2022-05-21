@@ -1,6 +1,6 @@
 import { httpMiddleware } from "../src/middlewares.js";
 import { isValidReqBody } from "../src/utils.js";
-import axios from "../src/axios_setup.js";
+import axios from "../src/axiosSetup.js";
 import https from "https";
 import ServerInfo from "../src/serverInfo.js";
 

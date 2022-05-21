@@ -1,4 +1,4 @@
-import axios from "./axios_setup.js";
+import axios from "./axiosSetup.js";
 import LruCache from "./lruCache.js";
 
 export class NetworkInfo {
