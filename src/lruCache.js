@@ -7,7 +7,7 @@ import LRU from "lru-cache";
  */
 
 const cacheOptions = {
-    max: 5000, // maximum number of items allowed in the cache
+    max: 50, // maximum number of items allowed in the cache
     ttl: 15 * 60 * 1000, // maximum life of a cached item in ms (15 min)
     ttlAutopurge: false, // will degrade performance if its true
     noUpdateTTL: true, // will not update ttl when new value is set to existing key
