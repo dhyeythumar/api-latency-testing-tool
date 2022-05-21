@@ -19,10 +19,13 @@ const handler = async (req, res) => {
         //* check for rate limit to avoid API abuse using client's IP address
         const clientIP = req.headers["x-real-ip"] || req.socket.remoteAddress;
         const clientRateLimit = rateLimit.checkRateLimit(clientIP);
-        console.log("In latency :: ", clientRateLimit);
-        //* ---
+
+        //* max num of request you're permitted to make per minute
         res.setHeader("X-RateLimit-Limit", RateLimit.REQ_THRESHOLD);
+        //* num of req remaining in the current rate limit window
         res.setHeader("X-RateLimit-Remaining", clientRateLimit.remaining);
+        //* time in which rate limit window resets (in ms)
+        res.setHeader("X-RateLimit-Reset", `${clientRateLimit.resetTime} ms`);
 
         let connection = "close";
         // by default keepAlive will be used unless specified
@@ -71,8 +74,6 @@ const handler = async (req, res) => {
 
         // const hostIPs = await dnsLookup(`${req.headers.host}`);
         const server = await serverInfo.run();
-        server["what-is-this?"] =
-            "Server's details on which this api latency testing tool is running.";
 
         res.setHeader(
             "server-timing",
