@@ -9,13 +9,16 @@ import LRU from "lru-cache";
 const cacheOptions = {
     max: 5000, // maximum number of items allowed in the cache
     ttl: 15 * 60 * 1000, // maximum life of a cached item in ms (15 min)
-    maxSize: 5000, // for use with tracking overall storage size
 };
 
 export default class LruCache {
     cache;
-    constructor(option = cacheOptions) {
-        this.cache = new LRU(option);
+    constructor(customOptions = {}) {
+        const options = {
+            ...cacheOptions,
+            ...customOptions,
+        };
+        this.cache = new LRU(options);
     }
 
     get(key) {
