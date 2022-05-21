@@ -38,7 +38,7 @@ export default class RateLimit {
         if (oldClient.remaining <= 0) {
             throw new httpErrorRes(
                 "Too Many Requests",
-                "Your request is throttled because you have exausted your API invocation limit. (Please check header value of 'X-RateLimit-Remaining')",
+                "Your request is throttled because you have exausted your API invocation limit. (Please obey 'X-RateLimit-*' header fields to avoid throttling)",
                 429
             );
         } else {

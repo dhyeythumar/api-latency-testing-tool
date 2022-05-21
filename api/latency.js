@@ -92,7 +92,7 @@ const handler = async (req, res) => {
         const statusCode = err.statusCode || 400;
 
         return res.status(statusCode).json({
-            error: err.name,
+            error: err.error,
             message: err.message,
             // stack: err.stack,
         });
