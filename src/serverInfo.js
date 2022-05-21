@@ -1,4 +1,5 @@
 import axios from "./axios_setup.js";
+import LruCache from "./lruCache.js";
 
 export class NetworkInfo {
     static imageUrl =
@@ -67,30 +68,10 @@ export class NetworkInfo {
     }
 }
 
-/*
- * Leveraging In-Memory cache to save server's info given by 3rd party service so I am not exausting my free tier limit.
- * This cache remains until server dies out.
- * Also note - caching won't work for local testing but for prod deployment it works !!
- */
-class Cache {
-    cache;
-    constructor() {
-        this.cache = {};
-    }
-
-    get(key) {
-        return this.cache[key];
-    }
-
-    set(key, data) {
-        this.cache[key] = data;
-    }
-}
-
 export default class ServerInfo {
     ipCache;
     constructor() {
-        this.ipCache = new Cache();
+        this.ipCache = new LruCache();
     }
 
     async _fetchServerIP() {
@@ -143,7 +124,7 @@ export default class ServerInfo {
 
             const cachedServerInfo = this.ipCache.get(serverIP);
             if (cachedServerInfo) {
-                // cachedServerInfo["cached"] = "true";
+                cachedServerInfo["cached"] = "true";
                 return cachedServerInfo;
             }
 
