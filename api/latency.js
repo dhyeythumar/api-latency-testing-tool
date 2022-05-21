@@ -3,13 +3,26 @@ import { isValidReqBody } from "../src/utils.js";
 import axios from "../src/axiosSetup.js";
 import https from "https";
 import ServerInfo from "../src/serverInfo.js";
+import RateLimit from "../src/rateLimiting.js";
 
-const serverInfo_obj = new ServerInfo();
+const serverInfo = new ServerInfo();
+const rateLimit = new RateLimit();
+
+// TODO ::
+// 2. Need to handle POST, PUT, PATCH, DELETE request
 
 const handler = async (req, res) => {
     const prevUptime = process.uptime();
     try {
         isValidReqBody(req);
+
+        //* check for rate limit to avoid API abuse using client's IP address
+        const clientIP = req.headers["x-real-ip"] || req.socket.remoteAddress;
+        const clientRateLimit = rateLimit.checkRateLimit(clientIP);
+        console.log("In latency :: ", clientRateLimit);
+        //* ---
+        res.setHeader("X-RateLimit-Limit", RateLimit.REQ_THRESHOLD);
+        res.setHeader("X-RateLimit-Remaining", clientRateLimit.remaining);
 
         let connection = "close";
         // by default keepAlive will be used unless specified
@@ -28,6 +41,8 @@ const handler = async (req, res) => {
             p = axios({
                 url: `${req.body.url}`,
                 method: `${req.body.method.toUpperCase()}`,
+                timeout: 5000,
+                maxRedirects: 2,
                 headers: {
                     "x-api-key": `${req.body.xApiKey}` || "",
                     connection,
@@ -55,7 +70,9 @@ const handler = async (req, res) => {
         avgLatency /= latencyArray.length;
 
         // const hostIPs = await dnsLookup(`${req.headers.host}`);
-        const serverInfo = await serverInfo_obj.run();
+        const server = await serverInfo.run();
+        server["what-is-this?"] =
+            "Server's details on which this api latency testing tool is running.";
 
         res.setHeader(
             "server-timing",
@@ -67,7 +84,7 @@ const handler = async (req, res) => {
             "latency-array": latencyArray,
             "total-successful-tests": latencyArray.length,
             "total-failed-tests": promiseArray.length - latencyArray.length,
-            "server-info": serverInfo,
+            "server-info": server,
         });
     } catch (err) {
         console.error(err);
