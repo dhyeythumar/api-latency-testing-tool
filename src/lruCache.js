@@ -48,6 +48,6 @@ export default class LruCache {
     }
 
     getRemainingTTL(key) {
-        this.cache.getRemainingTTL(key);
+        return this.cache.getRemainingTTL(key);
     }
 }

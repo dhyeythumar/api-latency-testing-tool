@@ -124,7 +124,7 @@ export default class ServerInfo {
 
             const cachedServerInfo = this.ipCache.get(serverIP);
             if (cachedServerInfo) {
-                cachedServerInfo["cached"] = "true";
+                // cachedServerInfo["cached"] = "true";
                 return cachedServerInfo;
             }
 
@@ -152,6 +152,8 @@ export default class ServerInfo {
                 promiseArray.push(NetworkInfo.calUploadSpeed());
 
                 let serverDetails = {};
+                serverDetails["what-is-this?"] =
+                    "Server's details on which this api latency testing tool is running.";
                 const resolvedPromises = await Promise.allSettled(promiseArray);
                 resolvedPromises.forEach((res) => {
                     if (res.status === "fulfilled") {

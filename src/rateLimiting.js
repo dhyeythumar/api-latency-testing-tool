@@ -33,10 +33,9 @@ export default class RateLimit {
             return this._set(ip);
         }
 
-        console.log("oldClient.isStale() :: ", oldClient.isStale());
         console.log(
-            "oldClient.getRemainingTTL() :: ",
-            oldClient.getRemainingTTL()
+            "getRemainingTTL() :: ",
+            this.rateLimit.getRemainingTTL(ip)
         );
 
         if (oldClient.remaining > RateLimit.REQ_THRESHOLD) {
@@ -47,7 +46,7 @@ export default class RateLimit {
             );
         } else {
             oldClient.remaining -= 1;
-            // this.rateLimit.set(ip, oldClient); // TODO do I need to do this
+            this.rateLimit.set(ip, oldClient);
             return oldClient;
         }
     }
