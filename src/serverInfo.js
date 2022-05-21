@@ -48,7 +48,7 @@ export class NetworkInfo {
                 url: `${process.env.HOST}/upload`,
                 method: "POST",
                 headers: {
-                    "x-rapidapi-proxy-secret": `${process.env.X_RAPIDAPI_PROXY_SECRET}`,
+                    "x-api-key": `${process.env.INTERNAL_X_API_KEY}`,
                 },
                 data: data,
             });
@@ -98,7 +98,7 @@ export default class ServerInfo {
             url: `${process.env.HOST}/whatismyipaddress`,
             method: "GET",
             headers: {
-                "x-rapidapi-proxy-secret": `${process.env.X_RAPIDAPI_PROXY_SECRET}`,
+                "x-api-key": `${process.env.INTERNAL_X_API_KEY}`,
             },
         });
         if (res && res.status === 200 && res.data) return res.data.ip;

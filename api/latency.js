@@ -73,7 +73,7 @@ const handler = async (req, res) => {
         console.error(err);
         const statusCode = err.statusCode || 400;
 
-        res.status(statusCode).json({
+        return res.status(statusCode).json({
             error: err.name,
             message: err.message,
             // stack: err.stack,
@@ -81,7 +81,7 @@ const handler = async (req, res) => {
     }
 };
 
-export default httpMiddleware(handler, "POST");
+export default httpMiddleware(null, handler, "POST");
 
 /*
  * :: Note ::

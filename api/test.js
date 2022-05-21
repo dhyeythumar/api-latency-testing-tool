@@ -1,4 +1,4 @@
-import { httpMiddleware } from "../src/middlewares.js";
+import { httpMiddleware, authMiddleware } from "../src/middlewares.js";
 import { NetworkInfo } from "../src/serverInfo.js";
 import axios from "axios";
 
@@ -9,7 +9,7 @@ const handler = async (req, res) => {
         url: `${process.env.HOST}/whatismyipaddress`,
         method: "GET",
         headers: {
-            "x-rapidapi-proxy-secret": `${process.env.X_RAPIDAPI_PROXY_SECRET}`,
+            "x-api-key": `${process.env.INTERNAL_X_API_KEY}`,
         },
     });
     const otherIPService = await axios({
@@ -20,7 +20,7 @@ const handler = async (req, res) => {
     const download = await NetworkInfo.calDownloadSpeed();
     const upload = await NetworkInfo.calUploadSpeed();
 
-    res.status(200).json({
+    return res.status(200).json({
         reqHeaders: req.headers,
         myIPService: myIPService.data.ip,
         otherIPService: otherIPService.data.trim(),
@@ -30,4 +30,4 @@ const handler = async (req, res) => {
     });
 };
 
-export default httpMiddleware(handler, "GET");
+export default httpMiddleware(authMiddleware, handler, "GET");

@@ -6,33 +6,45 @@ const optionsMiddleware = (req, res) => {
 };
 
 /*
- * 1. Requests from external world are only allowed from RapidAPI Gateway.
- * 2. Requests from internal traffic would be adding 'x-rapidapi-proxy-secret' in headers to bypass security
+ * For open endpoins no auth required
+ * (Rate limiting would be applied)
  */
-const httpMiddleware = (fn, method) => {
+const httpMiddleware = (authFn, mainFn, method) => {
     return (req, res) => {
         res.setHeader("Content-Type", "application/json; charset=utf-8");
         res.setHeader("Allow", `${method}`);
 
         if (req.method === "OPTIONS") return optionsMiddleware(req, res);
-        else if (req.method !== method) {
+        else if (req.method !== method)
             return res.status(405).json({
                 error: "Method Not Allowed",
                 message: `Method other then ${method}, OPTIONS are not allowed`,
             });
-        }
 
-        if (
-            req.headers["x-rapidapi-proxy-secret"] !==
-            process.env.X_RAPIDAPI_PROXY_SECRET
-        )
-            return res.status(401).json({
-                error: "Can't access the endpoint directly!",
-                message:
-                    "Only requests from RapidAPI gateway are accepted (https://rapidapi.com/dhyeythumar/api/apis-latency-testing).",
-            });
-        return fn(req, res);
+        //* auth routes are used internally
+        if (authFn !== null) {
+            const isAuth = authFn(req, res);
+            if (!isAuth) return;
+        }
+        return mainFn(req, res);
     };
 };
 
-export { httpMiddleware };
+/*
+ * Requests from internal traffic would be adding 'x-api-key' in headers for security
+ */
+const authMiddleware = (req, res) => {
+    if (
+        !req.headers["x-api-key"] ||
+        req.headers["x-api-key"] !== process.env.INTERNAL_X_API_KEY
+    ) {
+        res.status(401).json({
+            error: "Can't access the endpoint directly!",
+            message: "Only requests from internal services are accepted.",
+        });
+        return false;
+    }
+    return true;
+};
+
+export { httpMiddleware, authMiddleware };

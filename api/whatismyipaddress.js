@@ -1,13 +1,12 @@
-import { httpMiddleware } from "../src/middlewares.js";
+import { httpMiddleware, authMiddleware } from "../src/middlewares.js";
 
-//* GET endpoint for getting server's IP
+//! internal GET endpoint for getting server's IP
 //* usage: /whatismyipaddress
 const handler = async (req, res) => {
-    console.log(req.headers);
     // req.socket.remoteAddress will mostly give local/private IP address
-    res.status(200).json({
+    return res.status(200).json({
         ip: req.headers["x-real-ip"] || req.socket.remoteAddress,
     });
 };
 
-export default httpMiddleware(handler, "GET");
+export default httpMiddleware(authMiddleware, handler, "GET");
