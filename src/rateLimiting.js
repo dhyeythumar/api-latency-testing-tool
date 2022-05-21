@@ -9,7 +9,7 @@ import httpErrorRes from "./utils.js";
 
 export default class RateLimit {
     rateLimit;
-    static REQ_THRESHOLD = 30; // 30 req / min
+    static REQ_THRESHOLD = 5; // Rate Limit of - 30 req / min
     constructor() {
         this.rateLimit = new LruCache({
             ttl: 1 * 60 * 1000, // 1 min
